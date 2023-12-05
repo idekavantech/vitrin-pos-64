@@ -83,7 +83,7 @@ const CustomMap = ({
             width: 25.6,
             height: 40.75,
             background: `url(${CDN_BASE_URL}${markerUrl}) ${calculateMarkerPosition(
-              30
+              30,
             )}`,
             backgroundSize: "255px 163px",
           }}
@@ -136,7 +136,7 @@ const CustomMap = ({
               onClick={m.onClick}
               icon={icon(getIconIndex(m, i))}
             />
-          ) : null
+          ) : null,
         )}
     </Map>
   );

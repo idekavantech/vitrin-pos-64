@@ -48,6 +48,8 @@ module.exports = {
             loader: "sass-loader",
             options: {
               sourceMap: true,
+              // Specify Dart Sass implementation
+              implementation: require("sass"),
             },
           },
         ],
@@ -125,28 +127,22 @@ module.exports = {
   },
   target: "electron-renderer",
   plugins: [
-    new HtmlWebpackPlugin({
-      title: `${process.env.npm_package_version} مدیریت ویترین - نسخه`,
-    }),
-    new PreloadWebpackPlugin({
-      rel: 'prefetch',
-      as: 'font',
-      include: 'allAssets',
-      fileWhitelist: [/\.(woff2?|eot|ttf|otf)(\?.*)?$/i],
-    }),
+    // ... other plugins ...
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify("development"),
     }),
   ],
-  devtool: "cheap-source-map",
+  devtool: "eval-source-map", // Updated for better debugging
   devServer: {
-    contentBase: path.resolve(__dirname, "dist"),
-    stats: {
-      colors: true,
-      chunks: false,
-      children: false,
+    static: {
+      directory: path.resolve(__dirname, "dist"),
+      // other static options if needed...
     },
-    before() {
+    // Include other devServer options as per your requirement
+    onBeforeSetupMiddleware(devServer) {
+      if (!devServer) throw new Error("webpack-dev-server is not defined");
+
+      // Spawn Electron process
       spawn("electron", ["."], {
         shell: true,
         env: process.env,
@@ -155,5 +151,6 @@ module.exports = {
         .on("close", (code) => process.exit(0))
         .on("error", (spawnError) => console.error(spawnError));
     },
+    // You can add more devServer configurations here as needed
   },
 };

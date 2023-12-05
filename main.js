@@ -23,7 +23,7 @@ const axios = require("axios");
 app.disableHardwareAcceleration();
 app.commandLine.appendSwitch("disable-http-cache");
 
-require("update-electron-app")();
+// require("update-electron-app ")();
 
 if (require("electron-squirrel-startup"))
   setTimeout(() => {
@@ -69,7 +69,7 @@ if (!gotTheLock) {
             app.quit();
           },
         },
-      ])
+      ]),
     );
     createWindow();
   });
@@ -116,6 +116,7 @@ function createWindow() {
       enableRemoteModule: true,
       contextIsolation: false,
       webSecurity: false,
+      preload: path.join(__dirname, "preload.js"),
     },
   });
   if (!dev) {
@@ -125,12 +126,7 @@ function createWindow() {
   let indexPath;
 
   if (dev && process.argv.indexOf("--noDevServer") === -1) {
-    indexPath = url.format({
-      protocol: "http:",
-      host: "localhost:8080",
-      pathname: "index.html",
-      slashes: true,
-    });
+    indexPath = "index.html";
   } else {
     indexPath = url.format({
       protocol: "file:",
@@ -151,7 +147,7 @@ function createWindow() {
     } = require("electron-devtools-installer");
 
     installExtension(REACT_DEVELOPER_TOOLS).catch((err) =>
-      console.log("Error loading React DevTools: ", err)
+      console.log("Error loading React DevTools: ", err),
     );
     if (dev) {
       mainWindow.webContents.openDevTools();
@@ -239,9 +235,7 @@ app.on("window-all-closed", () => {
 app.on("activate", () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) {
-    createWindow();
-  }
+  if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
 ipcMain.on("print", (event, content, url, printOptions) => {
   workerWindow.webContents.send("print", content, url, printOptions);
@@ -261,7 +255,7 @@ ipcMain.on("hideNotification", () => {
 ipcMain.on("redirectOrder", async (event, order) => {
   if (order) {
     await mainWindow.webContents.executeJavaScript(
-      `localStorage.setItem("selectedSiteDomain", "${order.siteDomain}")`
+      `localStorage.setItem("selectedSiteDomain", "${order.siteDomain}")`,
     );
     mainWindow.webContents.send("redirectOrder", order);
   }
