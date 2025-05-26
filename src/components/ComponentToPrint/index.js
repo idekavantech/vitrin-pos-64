@@ -179,7 +179,7 @@ export default class ComponentToPrint extends React.Component {
               </span>
             </div>
           )}
-          {order.delivery_timing_type === "scheduled" && order.delivery_interval && (
+          {order.delivery_timing_type === "scheduled" || "fast" && order.delivery_interval && (
             <div className="mt-1">
               <span>زمان ارسال: </span>
               <span className="u-fontWeightBold">
